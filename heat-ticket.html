@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f0e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Heat Ticket" />
+  <title>Heat Ticket</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font: 16px/1.45 system-ui, -apple-system, sans-serif;
+      background: #0b0f0e; color: #e6ebe6;
+      padding: 16px 16px 108px;
+    }
+    body.light { background: #f7f5f0; color: #161410; }
+    .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .top .sub { margin-bottom: 0; }
+    .icon-btn {
+      width: 44px; min-width: 44px; min-height: 44px; padding: 0; flex-shrink: 0;
+    }
+    .icon-btn svg { width: 22px; height: 22px; }
+    h1 { font-size: 1.35rem; margin: 0 0 4px; }
+    p { margin: 0; }
+    .sub { font-size: 13px; opacity: .7; margin-bottom: 12px; }
+    label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .7; margin: 0 0 6px; }
+    input, textarea {
+      width: 100%; border: 1px solid #3d4a44; background: #1a2320; color: inherit;
+      border-radius: 8px; padding: 12px; font-size: 16px;
+    }
+    body.light input, body.light textarea { background: #fff; border-color: #d4cfc4; }
+    textarea { min-height: 64px; resize: none; }
+    .row { margin-bottom: 12px; }
+    .split { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+    .theme { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 12px 0 16px; }
+    button, .btn {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 48px; border: 0; border-radius: 8px; font-size: 16px; font-weight: 700;
+      width: 100%; color: inherit; background: #1a2320; text-decoration: none;
+    }
+    body.light button, body.light .btn { background: #efece4; color: #161410; }
+    .theme .on { background: #d7ddd6; color: #0b0f0e; }
+    body.light .theme .on { background: #1a1814; color: #f7f5f0; }
+    .save { background: #c45c48; color: #fff; margin-bottom: 8px; }
+    .hull { background: #131a18; border: 1px solid #3d4a44; border-radius: 16px; padding: 8px; }
+    body.light .hull { background: #fff; border-color: #d4cfc4; }
+    .bow { text-align: center; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .7; padding: 8px; }
+    .tanks { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .tank { background: #1a2320; min-height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; }
+    body.light .tank { background: #efece4; }
+    .tank span { font-size: 12px; opacity: .7; font-family: ui-monospace, monospace; }
+    .tank input { border: 0; background: transparent; text-align: center; font: 700 28px/1 ui-monospace, monospace; padding: 4px; }
+    .avg { background: #131a18; border: 1px solid #3d4a44; border-radius: 12px; padding: 16px; margin-top: 14px; }
+    body.light .avg { background: #fff; border-color: #d4cfc4; }
+    .avg b { font: 700 36px/1 ui-monospace, monospace; }
+    .dock {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      display: grid; grid-template-columns: 2fr 1fr; gap: 8px;
+      padding: 12px 16px 20px; background: inherit; border-top: 1px solid #3d4a44;
+    }
+    .dock .go { background: #d7ddd6; color: #0b0f0e; }
+    body.light .dock .go { background: #1a1814; color: #f7f5f0; }
+    .tank-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 4px 4px 8px;
+    }
+    .tank-head .bow { padding: 4px 0; text-align: left; }
+    .clear-temps {
+      width: auto; min-height: 36px; padding: 0 12px; font-size: 13px; flex-shrink: 0;
+    }
+    .hint { font-size: 13px; opacity: .75; margin: 8px 0 14px; }
+    #modeTag {
+      font: 700 13px/1.2 system-ui;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin: 0 0 12px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    body.dark #modeTag { background: #1a2320; color: #8b968e; }
+    body.light #modeTag { background: #ffe56a; color: #161410; }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 16px; }
+    .tabs .on { background: #d7ddd6; color: #0b0f0e; }
+    body.light .tabs .on { background: #1a1814; color: #f7f5f0; }
+    .eta {
+      background: #131a18; border: 1px solid #3d4a44; border-radius: 12px;
+      padding: 14px; margin-bottom: 14px;
+    }
+    body.light .eta { background: #fff; border-color: #d4cfc4; }
+    .eta b { font: 700 22px/1.2 ui-monospace, monospace; }
+    .log-item {
+      background: #131a18; border: 1px solid #3d4a44; border-radius: 10px;
+      padding: 12px; margin-bottom: 8px; font-family: ui-monospace, monospace; font-size: 13px;
+    }
+    body.light .log-item { background: #fff; border-color: #d4cfc4; }
+    .log-item .when { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; margin-bottom: 6px; font-family: system-ui, sans-serif; }
+    .save-temps { margin-top: 12px; background: #c45c48; color: #fff; }
+  </style>
+</head>
+<body class="dark">
+  <div class="top">
+    <div>
+      <h1>Heat Ticket</h1>
+      <p class="sub">Heater barge · 6 tanks · this file is the app</p>
+    </div>
+    <button type="button" class="icon-btn" id="clearAll" aria-label="Clear all" title="Clear all">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+        <path d="M10 11v6" />
+        <path d="M14 11v6" />
+        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+      </svg>
+    </button>
+  </div>
+
+  <a class="btn save" id="saveLink" href="/heat-ticket.html" download="Heat-Ticket.html">Save to this phone</a>
+
+  <div class="theme">
+    <button type="button" id="darkBtn" class="on">Dark</button>
+    <button type="button" id="lightBtn">Light</button>
+  </div>
+  <p id="modeTag">Mode: Dark</p>
+
+  <div class="tabs">
+    <button type="button" id="tabTicket" class="on">Ticket</button>
+    <button type="button" id="tabLog">Log</button>
+  </div>
+
+  <div id="paneTicket">
+  <div class="row"><label>Barge name</label><input id="barge" placeholder="e.g. CTC 123" autocapitalize="characters" /></div>
+  <div class="row"><label>Dock / fleet</label><input id="dockFleet" placeholder="e.g. IRP Fleet" /></div>
+  <div class="row split">
+    <div><label>Product</label><input id="product" placeholder="Optional" /></div>
+    <div><label>Target °F</label><input id="target" inputmode="decimal" placeholder="—" /></div>
+  </div>
+
+  <div class="hull">
+    <div class="tank-head">
+      <div class="bow">FWD · BOW · PORT left · STBD right</div>
+      <button type="button" class="clear-temps" id="clearTemps">Clear temps</button>
+    </div>
+    <div class="tanks">
+      <div class="tank"><span>1P PORT</span><input data-tank="1P" inputmode="decimal" placeholder="—" /><span>°F</span></div>
+      <div class="tank"><span>1S STBD</span><input data-tank="1S" inputmode="decimal" placeholder="—" /><span>°F</span></div>
+      <div class="tank"><span>2P PORT</span><input data-tank="2P" inputmode="decimal" placeholder="—" /><span>°F</span></div>
+      <div class="tank"><span>2S STBD</span><input data-tank="2S" inputmode="decimal" placeholder="—" /><span>°F</span></div>
+      <div class="tank"><span>3P PORT</span><input data-tank="3P" inputmode="decimal" placeholder="—" /><span>°F</span></div>
+      <div class="tank"><span>3S STBD</span><input data-tank="3S" inputmode="decimal" placeholder="—" /><span>°F</span></div>
+    </div>
+    <div class="bow">AFT · STERN · HEATER</div>
+  </div>
+
+  <div class="avg">
+    <p class="sub">AVERAGE</p>
+    <p><b id="avg">—</b> °F</p>
+    <p class="sub" id="meta">0/6 tanks</p>
+    <p class="sub" id="etaLine" style="margin-top:8px">Save at least two readings for an estimate</p>
+  </div>
+  <button type="button" class="save-temps" id="saveTemps">Save temps</button>
+
+  <div class="row" style="margin-top:12px"><label>Notes</label><textarea id="notes" placeholder="Heater status, coils, weather…"></textarea></div>
+  <div class="row"><label>Your name</label><input id="operator" /></div>
+  </div>
+
+  <div id="paneLog" hidden>
+    <div class="eta">
+      <p class="sub">EST. TIME TO TARGET</p>
+      <p><b id="etaMain">—</b></p>
+      <p class="sub" id="etaSub">Save temps on the Ticket tab</p>
+    </div>
+    <div id="logList"></div>
+  </div>
+
+  <div class="dock">
+    <button type="button" class="go" id="sendText">Send</button>
+    <button type="button" id="copy">Copy</button>
+  </div>
+
+  <script>
+    const KEY = "heat-ticket-file-v1";
+    const LOG_KEY = "heat-ticket-log-v1";
+    const THEME_KEY = "heat-ticket-theme";
+    const tanks = ["1P","1S","2P","2S","3P","3S"];
+    const $ = (id) => document.getElementById(id);
+    const tankEls = [...document.querySelectorAll("[data-tank]")];
+    let readings = [];
+
+    function loadLog() {
+      try {
+        const raw = localStorage.getItem(LOG_KEY);
+        readings = raw ? JSON.parse(raw) : [];
+      } catch (e) { readings = []; }
+      if (!Array.isArray(readings)) readings = [];
+    }
+    function saveLog() {
+      try { localStorage.setItem(LOG_KEY, JSON.stringify(readings)); } catch (e) {}
+    }
+    function fmtTime(ms) {
+      return new Date(ms).toLocaleString([], { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" });
+    }
+    function fmtDur(hours) {
+      if (!Number.isFinite(hours) || hours < 0) return "—";
+      const m = Math.round(hours * 60);
+      if (m < 60) return m + " min";
+      const h = Math.floor(m / 60);
+      const mm = m % 60;
+      return mm ? h + "h " + mm + "m" : h + "h";
+    }
+    function estimate() {
+      const target = Number($("target").value);
+      const pts = readings.filter((r) => r.avg != null && Number.isFinite(r.avg));
+      if (!Number.isFinite(target) || target <= 0) {
+        return { main: "Set a target °F", sub: "Needed for an estimate" };
+      }
+      if (pts.length < 2) {
+        return { main: "Need 2+ saves", sub: pts.length === 1 ? "Saved 1 reading — save again later" : "Save temps as they climb" };
+      }
+      const t0 = pts[0].at;
+      const xs = pts.map((p) => (p.at - t0) / 3600000);
+      const ys = pts.map((p) => p.avg);
+      const n = xs.length;
+      const meanX = xs.reduce((a, b) => a + b, 0) / n;
+      const meanY = ys.reduce((a, b) => a + b, 0) / n;
+      let num = 0, den = 0;
+      for (let i = 0; i < n; i++) {
+        num += (xs[i] - meanX) * (ys[i] - meanY);
+        den += (xs[i] - meanX) * (xs[i] - meanX);
+      }
+      const last = pts[pts.length - 1];
+      const rate = den === 0 ? 0 : num / den;
+      if (last.avg >= target) {
+        return { main: "At target", sub: last.avg.toFixed(1) + "°F · " + rate.toFixed(1) + "°F/hr", ready: true };
+      }
+      if (rate <= 0.05) {
+        return { main: "Not climbing", sub: "Rate " + rate.toFixed(1) + "°F/hr — check heaters" };
+      }
+      const hours = (target - last.avg) / rate;
+      const hit = last.at + hours * 3600000;
+      return {
+        main: fmtDur(hours),
+        sub: "Est. " + target + "°F at " + fmtTime(hit) + " · " + rate.toFixed(1) + "°F/hr",
+        hours: hours,
+        hit: hit,
+        rate: rate,
+      };
+    }
+    function renderLog() {
+      const est = estimate();
+      $("etaMain").textContent = est.main;
+      $("etaSub").textContent = est.sub;
+      $("etaLine").textContent = est.ready ? "At target" : (est.hit ? "Est. target " + fmtTime(est.hit) + " (" + est.main + ")" : est.main);
+      const list = $("logList");
+      if (!readings.length) {
+        list.innerHTML = "<p class='sub'>No saved readings yet.</p>";
+        return;
+      }
+      list.innerHTML = readings.slice().reverse().map((r, i, arr) => {
+        const prev = arr[i + 1];
+        const delta = prev && prev.avg != null && r.avg != null ? r.avg - prev.avg : null;
+        const dStr = delta == null ? "" : (delta >= 0 ? "  +" : "  ") + delta.toFixed(1) + "°";
+        const row = tanks.map((id) => id + " " + (r.temps[id] ? Number(r.temps[id]).toFixed(1) : "—")).join("  ");
+        return "<div class='log-item'><div class='when'>" + fmtTime(r.at) + "</div>AVG " + (r.avg == null ? "—" : r.avg.toFixed(1)) + "°F" + dStr + "<br>" + row + "</div>";
+      }).join("");
+    }
+    function stampInputs() {
+      document.querySelectorAll("input").forEach((el) => {
+        el.setAttribute("value", el.value);
+      });
+      document.querySelectorAll("textarea").forEach((el) => {
+        el.textContent = el.value;
+      });
+    }
+    function fileBlob() {
+      stampInputs();
+      const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const barge = ($("barge").value || "Heat-Ticket").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "");
+      const name = (barge || "Heat-Ticket") + ".html";
+      return new File([html], name, { type: "text/html" });
+    }
+    function downloadFile() {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(fileBlob());
+      a.download = "Heat-Ticket.html";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function whiteLooksDark() {
+      const p = document.createElement("div");
+      p.style.cssText = "position:fixed;left:0;top:0;width:32px;height:32px;background:#ffffff;color-scheme:only light;z-index:2147483647;pointer-events:none";
+      document.body.appendChild(p);
+      const rgb = getComputedStyle(p).backgroundColor;
+      p.remove();
+      const n = (rgb.match(/\d+/g) || []).map(Number);
+      return (n[0] ?? 255) < 120;
+    }
+
+    function theme(next) {
+      const light = next === "light";
+      const bg = light ? "#ffffff" : "#0b0f0e";
+      const fg = light ? "#111111" : "#e6ebe6";
+      document.body.className = light ? "light" : "dark";
+      document.documentElement.style.setProperty("background", bg, "important");
+      document.documentElement.style.setProperty("color", fg, "important");
+      document.documentElement.style.setProperty("color-scheme", light ? "only light" : "only dark", "important");
+      document.body.style.setProperty("background", bg, "important");
+      document.body.style.setProperty("color", fg, "important");
+      document.documentElement.style.filter = "none";
+      if (light && whiteLooksDark()) {
+        document.documentElement.style.filter = "invert(1) hue-rotate(180deg)";
+      }
+      $("darkBtn").className = light ? "" : "on";
+      $("lightBtn").className = light ? "on" : "";
+      $("modeTag").textContent = light ? "Mode: Light" : "Mode: Dark";
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = bg;
+      var cs = document.querySelector('meta[name="color-scheme"]');
+      if (cs) cs.content = light ? "only light" : "only dark";
+      try { localStorage.setItem(THEME_KEY, light ? "light" : "dark"); } catch (e) {}
+    }
+
+    function state() {
+      const temps = {};
+      tankEls.forEach((el) => { temps[el.dataset.tank] = el.value.trim(); });
+      return {
+        barge: $("barge").value, dock: $("dockFleet").value, product: $("product").value,
+        target: $("target").value.trim(), temps, notes: $("notes").value,
+        operator: $("operator").value
+      };
+    }
+    function readStored() {
+      try {
+        const raw = localStorage.getItem(KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      try {
+        const parts = document.cookie.split("; ");
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i].indexOf(KEY + "=") === 0) {
+            return JSON.parse(decodeURIComponent(parts[i].slice(KEY.length + 1)));
+          }
+        }
+      } catch (e) {}
+      return null;
+    }
+    function fillFrom(s) {
+      if (!s) return;
+      if (!$("barge").value.trim()) $("barge").value = s.barge || "";
+      if (!$("dockFleet").value.trim()) $("dockFleet").value = s.dock || "";
+      if (!$("product").value.trim()) $("product").value = s.product || "";
+      if (!$("target").value.trim() && s.target) $("target").value = String(s.target);
+      if (!$("notes").value.trim()) $("notes").value = s.notes || "";
+      if (!$("operator").value.trim()) $("operator").value = s.operator || "";
+      tankEls.forEach((el) => {
+        if (!el.value.trim() && s.temps) el.value = s.temps[el.dataset.tank] || "";
+      });
+    }
+    function load() {
+      try { theme(localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark"); } catch (e) { theme("dark"); }
+      fillFrom(readStored());
+      loadLog();
+      stampInputs();
+      render();
+      renderLog();
+    }
+    function save() {
+      stampInputs();
+      const raw = JSON.stringify(state());
+      try { localStorage.setItem(KEY, raw); } catch (e) {}
+      try {
+        document.cookie = KEY + "=" + encodeURIComponent(raw) + ";max-age=31536000;path=/;SameSite=Lax";
+      } catch (e) {}
+      render();
+      renderLog();
+    }
+    function nums() {
+      return tanks.map((id) => {
+        const el = tankEls.find((t) => t.dataset.tank === id);
+        const n = Number(el.value);
+        return el.value.trim() && Number.isFinite(n) ? n : null;
+      }).filter((n) => n !== null);
+    }
+    function render() {
+      const v = nums();
+      const avg = v.length ? Math.round((v.reduce((a,b)=>a+b,0)/v.length)*10)/10 : null;
+      $("avg").textContent = avg === null ? "—" : avg.toFixed(1);
+      $("meta").textContent = v.length + "/6 tanks";
+    }
+    function report() {
+      const s = state();
+      const v = nums();
+      const avg = v.length ? (v.reduce((a,b)=>a+b,0)/v.length) : null;
+      const cell = (id) => (s.temps[id] ? Number(s.temps[id]).toFixed(1) : "—");
+      const lines = [
+        "HEAT TICKET",
+        "Barge: " + (s.barge || "—"),
+        "Dock/Fleet: " + (s.dock || "—"),
+        "Product: " + (s.product || "—"),
+        "Operator: " + (s.operator || "—"),
+        "Taken: " + new Date().toLocaleString(),
+        "",
+        "Tanks °F",
+        "1P " + cell("1P") + "  1S " + cell("1S"),
+        "2P " + cell("2P") + "  2S " + cell("2S"),
+        "3P " + cell("3P") + "  3S " + cell("3S"),
+        "",
+        avg === null ? "AVG: —" : "AVG: " + avg.toFixed(1) + "°F  (" + v.length + " of 6 tanks)",
+        "Target: " + (s.target ? s.target + "°F" : "—"),
+      ];
+      if (s.notes) {
+        lines.push("");
+        lines.push("Notes: " + s.notes);
+      }
+      const est = estimate();
+      if (readings.length) {
+        lines.push("");
+        lines.push("Readings: " + readings.length);
+        if (est.hit) lines.push("Est. target: " + fmtTime(est.hit) + " (" + est.main + ")");
+        else if (est.ready) lines.push("Est: at target");
+      }
+      return lines.join("\n");
+    }
+
+    function press(id, fn) {
+      const el = $(id);
+      const go = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        fn();
+      };
+      el.addEventListener("pointerdown", go, { passive: false });
+      el.addEventListener("click", go, { passive: false });
+    }
+    press("darkBtn", function () { theme("dark"); });
+    press("lightBtn", function () { theme("light"); });
+    press("clearTemps", function () {
+      tankEls.forEach((el) => {
+        el.value = "";
+        el.setAttribute("value", "");
+      });
+      save();
+    });
+    press("clearAll", function () {
+      $("barge").value = "";
+      $("dockFleet").value = "";
+      $("product").value = "";
+      $("target").value = "";
+      $("notes").value = "";
+      $("operator").value = "";
+      tankEls.forEach((el) => {
+        el.value = "";
+        el.setAttribute("value", "");
+      });
+      readings = [];
+      saveLog();
+      save();
+      renderLog();
+    });
+    press("tabTicket", function () {
+      $("tabTicket").className = "on";
+      $("tabLog").className = "";
+      $("paneTicket").hidden = false;
+      $("paneLog").hidden = true;
+    });
+    press("tabLog", function () {
+      $("tabTicket").className = "";
+      $("tabLog").className = "on";
+      $("paneTicket").hidden = true;
+      $("paneLog").hidden = false;
+      renderLog();
+    });
+    $("saveTemps").onclick = function () {
+      const v = nums();
+      if (!v.length) return;
+      const avg = Math.round((v.reduce((a, b) => a + b, 0) / v.length) * 10) / 10;
+      if (readings.length) {
+        const last = readings[readings.length - 1];
+        if (Date.now() - last.at < 15000 && last.avg === avg) return;
+      }
+      const temps = {};
+      tankEls.forEach((el) => { temps[el.dataset.tank] = el.value.trim(); });
+      readings.push({ at: Date.now(), temps: temps, avg: avg, target: $("target").value.trim() });
+      saveLog();
+      renderLog();
+      $("saveTemps").textContent = "Saved";
+      setTimeout(() => { $("saveTemps").textContent = "Save temps"; }, 1000);
+    };
+    $("saveLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      downloadFile();
+    });
+    document.querySelectorAll("input,textarea").forEach((el) => el.addEventListener("input", save));
+    window.addEventListener("pagehide", save);
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) save();
+    });
+    $("copy").onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(report());
+        $("copy").textContent = "Copied";
+        setTimeout(() => { $("copy").textContent = "Copy"; }, 1200);
+      } catch (e) {
+        alert(report());
+      }
+    };
+    $("sendText").onclick = async function () {
+      const text = report();
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: "Heat Ticket", text: text });
+          return;
+        }
+      } catch (e) {
+        if (e && e.name === "AbortError") return;
+      }
+      try { await navigator.clipboard.writeText(text); } catch (e) {}
+      const body = encodeURIComponent(text);
+      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      location.href = ios ? "sms:&body=" + body : "sms:?body=" + body;
+    };
+    load();
+  </script>
+</body>
+</html>
