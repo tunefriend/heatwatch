@@ -7,8 +7,8 @@
   <meta name="color-scheme" content="dark" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Heat Ticket" />
-  <title>Heat Ticket</title>
+  <meta name="apple-mobile-web-app-title" content="HeaterWatch" />
+  <title>HeaterWatch</title>
   <style>
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
@@ -45,7 +45,14 @@
     body.light button, body.light .btn { background: #efece4; color: #161410; }
     .theme .on { background: #d7ddd6; color: #0b0f0e; }
     body.light .theme .on { background: #1a1814; color: #f7f5f0; }
-    .save { background: #c45c48; color: #fff; margin-bottom: 8px; }
+    .hero {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
     .hull { background: #131a18; border: 1px solid #3d4a44; border-radius: 16px; padding: 8px; }
     body.light .hull { background: #fff; border-color: #d4cfc4; }
     .bow { text-align: center; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .7; padding: 8px; }
@@ -69,6 +76,12 @@
       padding: 4px 4px 8px;
     }
     .tank-head .bow { padding: 4px 0; text-align: left; }
+    #bowName {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      opacity: 1;
+    }
     .clear-temps {
       width: auto; min-height: 36px; padding: 0 12px; font-size: 13px; flex-shrink: 0;
     }
@@ -100,13 +113,35 @@
     body.light .log-item { background: #fff; border-color: #d4cfc4; }
     .log-item .when { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; margin-bottom: 6px; font-family: system-ui, sans-serif; }
     .save-temps { margin-top: 12px; background: #c45c48; color: #fff; }
+    .foot {
+      margin: 28px 0 8px;
+      padding-top: 16px;
+      border-top: 1px solid #3d4a44;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      justify-content: center;
+      font-size: 13px;
+    }
+    .foot a { color: inherit; opacity: .8; }
+    .foot .donate {
+      display: inline-flex; align-items: center; justify-content: center;
+      opacity: 1;
+    }
+    .foot .donate img { height: 26px; width: auto; }
+    .foot .brand {
+      display: inline-flex; align-items: center; justify-content: center;
+      opacity: 1; width: 28px; height: 28px;
+    }
+    .foot .brand svg { width: 18px; height: 18px; fill: currentColor; }
+    body.light .foot { border-top-color: #d4cfc4; }
   </style>
 </head>
 <body class="dark">
   <div class="top">
     <div>
-      <h1>Heat Ticket</h1>
-      <p class="sub">Heater barge · 6 tanks · this file is the app</p>
+      <h1>HeaterWatch</h1>
+      <p class="sub">Heater barge · 6 tanks · heaterwatch.app</p>
     </div>
     <button type="button" class="icon-btn" id="clearAll" aria-label="Clear all" title="Clear all">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -119,7 +154,7 @@
     </button>
   </div>
 
-  <a class="btn save" id="saveLink" href="/heat-ticket.html" download="Heat-Ticket.html">Save to this phone</a>
+  <img class="hero" src="/tankerman-banner-v2.png" alt="Tankerman" />
 
   <div class="theme">
     <button type="button" id="darkBtn" class="on">Dark</button>
@@ -133,16 +168,16 @@
   </div>
 
   <div id="paneTicket">
-  <div class="row"><label>Barge name</label><input id="barge" placeholder="e.g. CTC 123" autocapitalize="characters" /></div>
-  <div class="row"><label>Dock / fleet</label><input id="dockFleet" placeholder="e.g. IRP Fleet" /></div>
+  <div class="row"><label>Barge name</label><input id="barge" placeholder="Barge number" autocapitalize="characters" /></div>
+  <div class="row"><label>Dock / fleet</label><input id="dockFleet" placeholder="Location" /></div>
   <div class="row split">
     <div><label>Product</label><input id="product" placeholder="Optional" /></div>
-    <div><label>Target °F</label><input id="target" inputmode="decimal" placeholder="—" /></div>
+    <div><label>Target °F</label><input id="target" inputmode="decimal" placeholder="Temp" /></div>
   </div>
 
   <div class="hull">
     <div class="tank-head">
-      <div class="bow">FWD · BOW · PORT left · STBD right</div>
+      <div class="bow" id="bowName">BOW</div>
       <button type="button" class="clear-temps" id="clearTemps">Clear temps</button>
     </div>
     <div class="tanks">
@@ -176,6 +211,22 @@
     </div>
     <div id="logList"></div>
   </div>
+
+  <footer class="foot">
+    <a class="brand" href="https://github.com/tunefriend" target="_blank" rel="noopener" aria-label="GitHub tunefriend">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+    <span aria-hidden="true">·</span>
+    <a class="brand" href="https://x.com/Tuxbased80" target="_blank" rel="noopener" aria-label="X @Tuxbased80">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+    <span aria-hidden="true">·</span>
+    <a href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0</a>
+    <span aria-hidden="true">·</span>
+    <a class="donate" href="https://liberapay.com/west66/donate" target="_blank" rel="noopener">
+      <img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg" />
+    </a>
+  </footer>
 
   <div class="dock">
     <button type="button" class="go" id="sendText">Send</button>
@@ -279,14 +330,14 @@
     function fileBlob() {
       stampInputs();
       const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-      const barge = ($("barge").value || "Heat-Ticket").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "");
-      const name = (barge || "Heat-Ticket") + ".html";
+      const barge = ($("barge").value || "HeaterWatch").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "");
+      const name = (barge || "HeaterWatch") + ".html";
       return new File([html], name, { type: "text/html" });
     }
     function downloadFile() {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(fileBlob());
-      a.download = "Heat-Ticket.html";
+      a.download = "HeaterWatch.html";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -392,6 +443,8 @@
       const avg = v.length ? Math.round((v.reduce((a,b)=>a+b,0)/v.length)*10)/10 : null;
       $("avg").textContent = avg === null ? "—" : avg.toFixed(1);
       $("meta").textContent = v.length + "/6 tanks";
+      const barge = $("barge").value.trim();
+      $("bowName").textContent = barge || "BOW";
     }
     function report() {
       const s = state();
@@ -399,7 +452,7 @@
       const avg = v.length ? (v.reduce((a,b)=>a+b,0)/v.length) : null;
       const cell = (id) => (s.temps[id] ? Number(s.temps[id]).toFixed(1) : "—");
       const lines = [
-        "HEAT TICKET",
+        "HEATERWATCH",
         "Barge: " + (s.barge || "—"),
         "Dock/Fleet: " + (s.dock || "—"),
         "Product: " + (s.product || "—"),
@@ -492,10 +545,6 @@
       $("saveTemps").textContent = "Saved";
       setTimeout(() => { $("saveTemps").textContent = "Save temps"; }, 1000);
     };
-    $("saveLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      downloadFile();
-    });
     document.querySelectorAll("input,textarea").forEach((el) => el.addEventListener("input", save));
     window.addEventListener("pagehide", save);
     document.addEventListener("visibilitychange", function () {
@@ -514,7 +563,7 @@
       const text = report();
       try {
         if (navigator.share) {
-          await navigator.share({ title: "Heat Ticket", text: text });
+          await navigator.share({ title: "HeaterWatch", text: text });
           return;
         }
       } catch (e) {
